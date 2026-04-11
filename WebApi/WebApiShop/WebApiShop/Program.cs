@@ -2,6 +2,7 @@
 using Repositories;
 using Services;
 using DTO;
+using WebApiShop.Middleware;
 
 DotNetEnv.Env.Load();
 var apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY");
@@ -73,6 +74,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 // Configure the HTTP request pipeline.
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors("AllowAngular");
 

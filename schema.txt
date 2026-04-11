@@ -1,0 +1,37 @@
+{
+  "site_name": "ToyKingdom",
+  "tables": [
+    {
+      "table_name": "Products",
+      "columns": [
+        {"name": "id", "type": "int", "key": "primary"},
+        {"name": "name", "type": "string", "description": "שם הצעצוע"},
+        {"name": "category", "type": "enum", "options": ["LEGO", "Dolls", "Board Games", "Outdoor", "Puzzles"]},
+        {"name": "target_age", "type": "string", "description": "גיל יעד, למשל: 3-5, 6-12"},
+        {"name": "price", "type": "decimal", "description": "מחיר לצרכן"},
+        {"name": "cost", "type": "decimal", "description": "עלות לרכישה מהספק"},
+        {"name": "stock_quantity", "type": "int", "description": "כמות במלאי"}
+      ]
+    },
+    {
+      "table_name": "Sales",
+      "columns": [
+        {"name": "sale_id", "type": "int", "key": "primary"},
+        {"name": "product_id", "type": "int", "key": "foreign"},
+        {"name": "sale_date", "type": "datetime"},
+        {"name": "quantity", "type": "int"},
+        {"name": "total_price", "type": "decimal"},
+        {"name": "customer_city", "type": "string"}
+      ]
+    },
+    {
+      "table_name": "Reviews",
+      "columns": [
+        {"name": "review_id", "type": "int"},
+        {"name": "product_id", "type": "int"},
+        {"name": "rating", "type": "int", "description": "1 to 5 stars"},
+        {"name": "sentiment", "type": "string", "options": ["Positive", "Neutral", "Negative"]}
+      ]
+    }
+  ]
+}

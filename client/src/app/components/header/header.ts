@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HeaderService } from '../../services/header.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -19,6 +19,14 @@ import { filter } from 'rxjs/operators';
   styleUrl: './header.css',
 })
 export class Header {
+  private headerService = inject(HeaderService);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+  cartService = inject(CartService);
+  private userService = inject(UserService);
+  private productService = inject(ProductService);
+  private orderService = inject(OrderService);
+
   isLoggedIn = false;
   username = '';
   firstName = '';
@@ -35,15 +43,7 @@ export class Header {
     isAdmin: false
   };
 
-  constructor(
-    private headerService: HeaderService,
-    private router: Router,
-    private authService: AuthService,
-    public cartService: CartService,
-    private userService: UserService,
-    private productService: ProductService,
-    private orderService: OrderService
-  ) {
+  constructor() {
     this.cartService.cart$.subscribe(items => {
       this.cartItems = items;
     });

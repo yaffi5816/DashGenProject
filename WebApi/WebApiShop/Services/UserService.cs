@@ -42,6 +42,7 @@ namespace Services
                 userEntity.IsAdmin = false;
             }
 
+            userEntity.Password = password.Hash(userEntity.Password);
             var newUser = await _repository.AddUser(userEntity);
             return _mapper.Map<UserReadOnlyDTO>(newUser);
         }

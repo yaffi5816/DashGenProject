@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -47,7 +47,7 @@ import { Router } from '@angular/router';
   `]
 })
 export class ContactButtonComponent {
-  constructor(private router: Router) {}
+  private router = inject(Router);
 
   goToContact() {
     this.router.navigate(['/contact']);

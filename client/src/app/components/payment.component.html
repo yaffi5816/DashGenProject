@@ -32,13 +32,19 @@
         <div class="form-group">
           <label>Card Number</label>
           <input type="text" [(ngModel)]="cardNumber" name="cardNumber" 
-                 placeholder="1234 5678 9012 3456" maxlength="19" required>
+                 (input)="formatCardNumber($event)"
+                 placeholder="1234 5678 9012 3456" maxlength="16" required
+                 [class.error]="cardNumberError">
+          <span class="error-message" *ngIf="cardNumberError">{{cardNumberError}}</span>
         </div>
 
         <div class="form-group">
           <label>Cardholder Name</label>
           <input type="text" [(ngModel)]="cardName" name="cardName" 
-                 placeholder="John Doe" required>
+                 (input)="formatCardName($event)"
+                 placeholder="John Doe" required
+                 [class.error]="cardNameError">
+          <span class="error-message" *ngIf="cardNameError">{{cardNameError}}</span>
         </div>
 
         <div class="form-row expiry-row">
@@ -46,14 +52,19 @@
             <label>Expiry Date</label>
             <input type="text" [(ngModel)]="expiryDate" name="expiryDate" 
                    (input)="formatExpiryDate($event)"
-                   placeholder="MM/YY" maxlength="5" required>
+                   placeholder="MM/YY" maxlength="5" required
+                   [class.error]="expiryDateError">
+            <span class="error-message" *ngIf="expiryDateError">{{expiryDateError}}</span>
           </div>
         </div>
 
         <div class="form-group cvv-input">
           <label>CVV</label>
           <input type="password" [(ngModel)]="cvv" name="cvv"
-                 placeholder="123" maxlength="3" required>
+                 (input)="validateCVV()"
+                 placeholder="123" maxlength="3" required
+                 [class.error]="cvvError">
+          <span class="error-message" *ngIf="cvvError">{{cvvError}}</span>
         </div>
 
         <button type="submit" class="btn-pay" [disabled]="processing || !isFormValid()">

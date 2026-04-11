@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CartService } from '../../services/cart.service';
@@ -14,15 +14,13 @@ import { OrderItem } from '../../../models/order-item.model';
   styleUrls: ['./cart.css']
 })
 export class CartComponent implements OnInit {
+  cartService = inject(CartService);
+  private orderService = inject(OrderService);
+  private router = inject(Router);
+  private productService = inject(ProductService);
+
   cartItems: OrderItem[] = [];
   total: number = 0;
-
-  constructor(
-    public cartService: CartService,
-    private orderService: OrderService,
-    private router: Router,
-    private productService: ProductService
-  ) {}
 
   getImageUrl(imgUrl: string | null): string {
     return this.productService.getImageUrl(imgUrl);

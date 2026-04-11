@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,6 +14,11 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './login.css'
 })
 export class Login {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private http = inject(HttpClient);
+  private cartService = inject(CartService);
+
   username = '';
   password = '';
   firstName = '';
@@ -21,13 +26,6 @@ export class Login {
   errorMessage = '';
   isRegisterMode = false;
   private apiUrl = 'http://localhost:5034/api/Users';
-
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private http: HttpClient,
-    private cartService: CartService
-  ) {}
 
   onSubmit(): void {
     if (this.isRegisterMode) {
@@ -78,7 +76,7 @@ export class Login {
   }
 
   register(): void {
-    if (!this.firstName || !this.lastName) {
+    if (!this.firstName || !this.lastName || !this.password || !this.username) {
       this.errorMessage = 'Please fill all fields';
       return;
     }

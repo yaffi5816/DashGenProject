@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -333,6 +333,9 @@ import { EmailService } from '../services/email.service';
   `]
 })
 export class CodeViewerComponent implements OnInit {
+  private router = inject(Router);
+  private emailService = inject(EmailService);
+
   generatedCode = '';
   refinementRequest = '';
   codeApproved = false;
@@ -340,13 +343,13 @@ export class CodeViewerComponent implements OnInit {
   refining = false;
   sending = false;
 
-  constructor(private router: Router, private emailService: EmailService) {}
-
   ngOnInit(): void {
-    // Get code from local storage
     const code = localStorage.getItem('generatedCode');
+    console.log('Loading code from localStorage:', code);
     if (code) {
       this.generatedCode = code;
+    } else {
+      console.warn('No code found in localStorage');
     }
   }
 

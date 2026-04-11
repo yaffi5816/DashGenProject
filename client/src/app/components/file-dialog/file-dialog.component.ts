@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
@@ -162,9 +162,9 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class FileDialogComponent {
-  selectedFile: File | null = null;
+  private dialogRef = inject(MatDialogRef<FileDialogComponent>);
 
-  constructor(private dialogRef: MatDialogRef<FileDialogComponent>) {}
+  selectedFile: File | null = null;
 
   onDragOver(event: DragEvent): void {
     event.preventDefault();

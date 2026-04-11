@@ -155,6 +155,18 @@
   transition: all 0.3s;
 }
 
+.form-group input.error {
+  border-color: #ef4444;
+}
+
+.error-message {
+  display: block;
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
 .form-group.cvv-input {
   max-width: 180px;
 }

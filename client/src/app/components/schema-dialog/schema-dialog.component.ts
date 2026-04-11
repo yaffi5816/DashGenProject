@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -119,9 +119,9 @@ import { FormsModule } from '@angular/forms';
   `]
 })
 export class SchemaDialogComponent {
-  schema = '';
+  private dialogRef = inject(MatDialogRef<SchemaDialogComponent>);
 
-  constructor(private dialogRef: MatDialogRef<SchemaDialogComponent>) {}
+  schema = '';
 
   onCancel(): void {
     this.dialogRef.close();

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -13,6 +13,9 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './contact.component.css'
 })
 export class ContactComponent {
+  private http = inject(HttpClient);
+  private dialog = inject(MatDialog);
+
   contactForm = {
     name: '',
     email: '',
@@ -21,7 +24,7 @@ export class ContactComponent {
   };
   loading = false;
 
-  constructor(private http: HttpClient, private dialog: MatDialog) {
+  constructor() {
     const firstName = localStorage.getItem('firstName') || '';
     const lastName = localStorage.getItem('lastName') || '';
     this.contactForm.name = `${firstName} ${lastName}`.trim();

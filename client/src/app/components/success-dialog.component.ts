@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -62,14 +62,14 @@ import { Router } from '@angular/router';
   `]
 })
 export class SuccessDialogComponent {
+  private dialogRef = inject(MatDialogRef<SuccessDialogComponent>);
+  private router = inject(Router);
+  data = inject(MAT_DIALOG_DATA) as { totalAmount: number };
+
   totalAmount: string = '0.00';
 
-  constructor(
-    private dialogRef: MatDialogRef<SuccessDialogComponent>,
-    private router: Router,
-    @Inject(MAT_DIALOG_DATA) public data: { totalAmount: number }
-  ) {
-    this.totalAmount = (data?.totalAmount || 0).toFixed(2);
+  constructor() {
+    this.totalAmount = (this.data?.totalAmount || 0).toFixed(2);
   }
 
   close(): void {

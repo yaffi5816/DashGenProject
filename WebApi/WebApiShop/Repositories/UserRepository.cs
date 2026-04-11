@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using BCrypt.Net;
+using Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -28,25 +29,13 @@ namespace Repositories
         }
         public async Task<User> Login(User loginUser)
         {
-            var user = await _dashGen2026Context.Users.FirstOrDefaultAsync(x=>x.UserName == loginUser.UserName &&
-            x.Password== loginUser.Password);
-            
-            if (user == null)
-            {
-                // Try to find by username only to debug
-                var userByName = await _dashGen2026Context.Users.FirstOrDefaultAsync(x => x.UserName == loginUser.UserName);
-                if (userByName != null)
-                {
-                    Console.WriteLine($"User found by name: {userByName.UserName}, but password mismatch. Expected: '{loginUser.Password}', Got: '{userByName.Password}'");
-                }
-                else
-                {
-                    Console.WriteLine($"User not found with username: {loginUser.UserName}");
-                }
-            }
-            
-            return user;
+            var user = await _dashGen2026Context.Users
+                .FirstOrDefaultAsync(x => x.UserName == loginUser.UserName);
 
+            if (user == null || !BCrypt.Net.BCrypt.Verify(loginUser.Password, user.Password))
+                return null;
+
+            return user;
         }
         public async Task UpdateUser(int id, User user)
         {

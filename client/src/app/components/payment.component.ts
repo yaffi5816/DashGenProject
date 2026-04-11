@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -18,6 +18,11 @@ import { OrderService } from '../services/order.service';
   styleUrls: ['./payment.component.css']
 })
 export class PaymentComponent {
+  private router = inject(Router);
+  private cartService = inject(CartService);
+  private productService = inject(ProductService);
+  private orderService = inject(OrderService);
+
   cardNumber = '';
   cardName = '';
   expiryDate = '';
@@ -25,13 +30,12 @@ export class PaymentComponent {
   processing = false;
   cartItems: any[] = [];
   totalAmount = 0;
+  cardNumberError = '';
+  cardNameError = '';
+  expiryDateError = '';
+  cvvError = '';
 
-  constructor(
-    private router: Router,
-    private cartService: CartService,
-    private productService: ProductService,
-    private orderService: OrderService
-  ) {
+  constructor() {
     const savedItems = localStorage.getItem('orderItems');
     
     if (savedItems) {
@@ -47,19 +51,97 @@ export class PaymentComponent {
     return this.productService.getImageUrl(imgUrl);
   }
 
+  formatCardNumber(event: any): void {
+    let value = event.target.value.replace(/\D/g, '');
+    this.cardNumber = value;
+    this.validateCardNumber();
+  }
+
+  formatCardName(event: any): void {
+    let value = event.target.value.replace(/[^a-zA-Z\s]/g, '');
+    this.cardName = value;
+    this.validateCardName();
+  }
+
+  validateCardName(): void {
+    if (this.cardName.length === 0) {
+      this.cardNameError = '';
+    } else if (this.cardName.trim().length < 3) {
+      this.cardNameError = 'Name must be at least 3 characters';
+    } else {
+      this.cardNameError = '';
+    }
+  }
+
+  validateCardNumber(): void {
+    const digits = this.cardNumber.replace(/\D/g, '');
+    if (digits.length === 0) {
+      this.cardNumberError = '';
+    } else if (digits.length < 16) {
+      this.cardNumberError = 'Card number must be 16 digits';
+    } else if (digits.length > 16) {
+      this.cardNumberError = 'Card number cannot exceed 16 digits';
+    } else {
+      this.cardNumberError = '';
+    }
+  }
+
   formatExpiryDate(event: any): void {
     let value = event.target.value.replace(/\D/g, '');
     if (value.length >= 2) {
       value = value.substring(0, 2) + '/' + value.substring(2, 4);
     }
     this.expiryDate = value;
+    this.validateExpiryDate();
+  }
+
+  validateExpiryDate(): void {
+    if (this.expiryDate.length === 0) {
+      this.expiryDateError = '';
+      return;
+    }
+    
+    if (this.expiryDate.length < 5) {
+      this.expiryDateError = 'Invalid format (MM/YY)';
+      return;
+    }
+
+    const [month, year] = this.expiryDate.split('/');
+    const monthNum = parseInt(month);
+    const yearNum = parseInt('20' + year);
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+
+    if (monthNum < 1 || monthNum > 12) {
+      this.expiryDateError = 'Invalid month (01-12)';
+    } else if (yearNum < currentYear || (yearNum === currentYear && monthNum < currentMonth)) {
+      this.expiryDateError = 'Card has expired';
+    } else {
+      this.expiryDateError = '';
+    }
+  }
+
+  validateCVV(): void {
+    if (this.cvv.length === 0) {
+      this.cvvError = '';
+    } else if (this.cvv.length < 3) {
+      this.cvvError = 'CVV must be 3 digits';
+    } else {
+      this.cvvError = '';
+    }
   }
 
   isFormValid(): boolean {
-    return this.cardNumber.trim().length >= 13 && 
-           this.cardName.trim().length > 0 && 
+    const cardDigits = this.cardNumber.replace(/\D/g, '');
+    return cardDigits.length === 16 && 
+           this.cardName.trim().length >= 3 && 
            this.expiryDate.length === 5 && 
-           this.cvv.length === 3;
+           this.cvv.length === 3 &&
+           !this.cardNumberError &&
+           !this.cardNameError &&
+           !this.expiryDateError &&
+           !this.cvvError;
   }
 
   processPayment(): void {
@@ -93,7 +175,6 @@ export class PaymentComponent {
           localStorage.removeItem('orderTotal');
           localStorage.removeItem('currentOrderId');
           localStorage.removeItem('originalSchema');
-          localStorage.removeItem('generatedCode');
           this.cartService.clearCart();
           this.router.navigate(['/code-viewer']);
         },

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
@@ -12,12 +12,12 @@ import { UserReadOnly, UserUpdate } from '../../../models/user.model';
   styleUrl: './users.css'
 })
 export class UsersComponent implements OnInit {
+  private userService = inject(UserService);
+
   users: UserReadOnly[] = [];
   loading = true;
   editingUser: UserUpdate | null = null;
   editingUserId: number | null = null;
-
-  constructor(private userService: UserService) {}
 
   ngOnInit() {
     this.loadUsers();

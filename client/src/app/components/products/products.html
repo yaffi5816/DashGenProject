@@ -10,37 +10,55 @@
     </button>
   </div>
 
-  <div class="filters-section">
-    <div class="search-box">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM19 19l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <input type="text" [(ngModel)]="searchQuery" placeholder="Search products...">
+  <div class="filters-top">
+    <div class="search-and-categories">
+      <div class="search-box">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM19 19l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange()" placeholder="Search products...">
+      </div>
+
+      <div class="category-filters">
+        <button 
+          [class.active]="selectedCategory === 'All'"
+          (click)="filterByCategory('All')"
+          class="filter-btn">
+          All
+        </button>
+        <button 
+          *ngFor="let category of categories" 
+          [class.active]="selectedCategory === category.categoryName"
+          (click)="filterByCategory(category.categoryName || 'All')"
+          class="filter-btn">
+          {{ category.categoryName }}
+        </button>
+      </div>
     </div>
 
-    <div class="category-filters">
-      <button 
-        [class.active]="selectedCategory === 'All'"
-        (click)="filterByCategory('All')"
-        class="filter-btn">
-        All
-      </button>
-      <button 
-        *ngFor="let category of categories" 
-        [class.active]="selectedCategory === category.categoryName"
-        (click)="filterByCategory(category.categoryName || 'All')"
-        class="filter-btn">
-        {{ category.categoryName }}
-      </button>
+    <div class="filters-row">
+      <select [(ngModel)]="sortOrder" (ngModelChange)="onSortChange()" class="sort-select">
+        <option value="">Sort by Price</option>
+        <option value="asc">Low to High</option>
+        <option value="desc">High to Low</option>
+      </select>
+
+      <div class="price-filter">
+        <input type="number" [(ngModel)]="minPrice" (ngModelChange)="onPriceChange()" placeholder="Min Price" class="price-input">
+        <span>-</span>
+        <input type="number" [(ngModel)]="maxPrice" (ngModelChange)="onPriceChange()" placeholder="Max Price" class="price-input">
+      </div>
     </div>
   </div>
 
-  <div *ngIf="loading" class="loading">
+  <div class="products-content">
+
+      <div *ngIf="loading" class="loading">
     <div class="spinner"></div>
     <p>Loading products...</p>
   </div>
 
-  <div *ngIf="!loading" class="products-grid">
+      <div *ngIf="!loading" class="products-grid">
     <div *ngFor="let product of filteredProducts" class="product-card" (click)="selectProduct(product)">
       <div class="product-image">
         <img [src]="getImageUrl(product.imgUrl)" [alt]="product.productName">
@@ -86,12 +104,12 @@
     </div>
   </div>
 
-  <div *ngIf="!loading && filteredProducts.length === 0" class="empty-state">
+      <div *ngIf="!loading && filteredProducts.length === 0" class="empty-state">
     <h2>No products found</h2>
     <p>Try adjusting your search or filters</p>
   </div>
 
-  <div *ngIf="!loading && filteredProducts.length > 0" class="pagination">
+      <div *ngIf="!loading && filteredProducts.length > 0" class="pagination">
     <button class="pagination-btn" (click)="previousPage()" [disabled]="currentPage === 1">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -114,7 +132,8 @@
         <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
-  </div>
+      </div>
+    </div>
 </div>
 
 <div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">

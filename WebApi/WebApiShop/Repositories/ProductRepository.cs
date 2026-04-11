@@ -17,14 +17,26 @@ namespace Repositories
             return await _context.Products.Include(p => p.Category).ToListAsync();
         }
 
-        public async Task<(IEnumerable<Product> products, int total)> GetProductsAsync(int[]? categoryId, string? description, double? minPrice, double? maxPrice, int? limit, int? page)
+        public async Task<(IEnumerable<Product> products, int total)> GetProductsAsync(int[]? categoryId, string? description, double? minPrice, double? maxPrice, int? limit, int? page, string? sortOrder)
         {
             var query = _context.Products.Where(product =>
-                        (description == null || product.ProductDescreption.Contains(description))
+                        (description == null || product.ProductName.Contains(description))
                         && (minPrice == null || product.Price >= minPrice)
                         && (maxPrice == null || product.Price <= maxPrice)
-                        && (categoryId == null || categoryId.Length == 0 || categoryId.Contains(product.CategoryId)))
-                            .OrderBy(product => product.Price);
+                        && (categoryId == null || categoryId.Length == 0 || categoryId.Contains(product.CategoryId)));
+
+            if (sortOrder == "asc")
+            {
+                query = query.OrderBy(product => product.Price);
+            }
+            else if (sortOrder == "desc")
+            {
+                query = query.OrderByDescending(product => product.Price);
+            }
+            else
+            {
+                query = query.OrderBy(product => product.ProductId);
+            }
 
             var total = await query.CountAsync();
             
@@ -53,6 +65,7 @@ namespace Repositories
         {
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
+            await _context.Entry(product).Reference(p => p.Category).LoadAsync();
             return product;
         }
 
@@ -72,9 +85,10 @@ namespace Repositories
 
         public async Task DeleteAsync(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.Include(p => p.OrdersItems).FirstOrDefaultAsync(p => p.ProductId == id);
             if (product != null)
             {
+                _context.OrdersItems.RemoveRange(product.OrdersItems);
                 _context.Products.Remove(product);
                 await _context.SaveChangesAsync();
             }

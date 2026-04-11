@@ -25,8 +25,10 @@ namespace Services
 
             CreateMap<Product, ProductDTO>()
             .ForMember(dest => dest.CategoryName,
-             opt => opt.MapFrom(src => src.Category.CategoryName))
-            .ReverseMap();
+             opt => opt.MapFrom(src => src.Category != null ? src.Category.CategoryName : null));
+            CreateMap<ProductDTO, Product>()
+            .ForMember(dest => dest.Category, opt => opt.Ignore())
+            .ForMember(dest => dest.OrdersItems, opt => opt.Ignore());
             //CreateMap<ProductDTO, Product>();
             CreateMap<Order, OrderDTO>()
             .ForMember(dest => dest.OrdersItems,

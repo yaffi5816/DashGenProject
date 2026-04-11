@@ -15,7 +15,7 @@ export class ProductService {
     return this.http.get<Product[]>(this.apiUrl);
   }
 
-  getProducts(categoryId?: number[], description?: string, minPrice?: number, maxPrice?: number, limit?: number, page?: number): Observable<{products: Product[], total: number}> {
+  getProducts(categoryId?: number[], description?: string, minPrice?: number, maxPrice?: number, limit?: number, page?: number, sortOrder?: string): Observable<{products: Product[], total: number}> {
     let params = new HttpParams();
     
     if (categoryId && categoryId.length > 0) {
@@ -26,6 +26,7 @@ export class ProductService {
     if (maxPrice !== undefined) params = params.set('maxPrice', maxPrice.toString());
     if (limit !== undefined) params = params.set('limit', limit.toString());
     if (page !== undefined) params = params.set('page', page.toString());
+    if (sortOrder) params = params.set('sortOrder', sortOrder);
     
     return this.http.get<{products: Product[], total: number}>(this.apiUrl, { params });
   }
@@ -36,6 +37,7 @@ export class ProductService {
 
   getImageUrl(imgUrl: string | null): string {
     if (!imgUrl) return 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800';
+    if (imgUrl.startsWith('data:image')) return imgUrl;
     if (imgUrl.startsWith('http')) return imgUrl;
     return `http://localhost:5034${imgUrl}`;
   }

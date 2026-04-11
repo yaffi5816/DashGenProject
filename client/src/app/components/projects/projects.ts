@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { OrderService, Order } from '../../services/order.service';
@@ -12,14 +12,12 @@ import { ProductService } from '../../services/product.service';
   styleUrls: ['./projects.css']
 })
 export class ProjectsComponent implements OnInit {
+  private orderService = inject(OrderService);
+  private productService = inject(ProductService);
+  private router = inject(Router);
+
   orders: Order[] = [];
   selectedOrder: Order | null = null;
-
-  constructor(
-    private orderService: OrderService,
-    private productService: ProductService,
-    private router: Router
-  ) {}
 
   ngOnInit() {
     this.loadOrders();

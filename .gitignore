@@ -1,0 +1,10 @@
+# Environment files with secrets
+.env
+WebApi/WebApiShop/WebApiShop/.env
+
+# Video files
+*.mp4
+
+# VS folders
+.vs/
+WebApi/.vs/

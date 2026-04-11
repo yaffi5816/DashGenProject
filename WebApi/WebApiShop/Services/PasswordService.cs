@@ -1,10 +1,4 @@
 ﻿using Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json;
 using Zxcvbn;
 namespace Services
 {
@@ -12,11 +6,14 @@ namespace Services
     {
         public Password CheckPassword(string password)
         {
-            Password password1 = new Password();
-            password1.ThePassword = password;
             var result = Zxcvbn.Core.EvaluatePassword(password);
-            password1.Level=result.Score;
-            return password1;
+            return new Password { ThePassword = password, Level = result.Score };
         }
+
+        public string Hash(string password) =>
+            BCrypt.Net.BCrypt.HashPassword(password);
+
+        public bool Verify(string password, string hash) =>
+            BCrypt.Net.BCrypt.Verify(password, hash);
     }
 }

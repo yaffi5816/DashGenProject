@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,10 +17,17 @@ import { Category } from '../../../models/category.model';
   styleUrl: './products.css'
 })
 export class ProductsComponent implements OnInit {
+  private router = inject(Router);
+  private productService = inject(ProductService);
+  private categoryService = inject(CategoryService);
+  private cartService = inject(CartService);
+  private authService = inject(AuthService);
+
   products: Product[] = [];
   categories: Category[] = [];
   selectedCategory = 'All';
   searchQuery = '';
+  searchTimeout: any;
   loading = true;
   quantities: { [key: number]: number } = {};
   currentPage = 1;
@@ -30,6 +37,9 @@ export class ProductsComponent implements OnInit {
   isAdmin = false;
   showModal = false;
   editingProduct: Product | null = null;
+  sortOrder = '';
+  minPrice: number | null = null;
+  maxPrice: number | null = null;
   productForm: Product = {
     productId: 0,
     categoryId: 0,
@@ -43,14 +53,6 @@ export class ProductsComponent implements OnInit {
   get categoriesForForm(): Category[] {
     return this.categories.filter(c => c.categoryName !== 'All');
   }
-
-  constructor(
-    private router: Router,
-    private productService: ProductService,
-    private categoryService: CategoryService,
-    private cartService: CartService,
-    private authService: AuthService
-  ) {}
 
   getImageUrl(imgUrl: string | null): string {
     return this.productService.getImageUrl(imgUrl);
@@ -72,12 +74,13 @@ export class ProductsComponent implements OnInit {
   }
 
   loadProducts() {
+    this.loading = true;
     console.log('Loading products...');
     const categoryIds = this.selectedCategory !== 'All' ? 
       [this.categories.find(c => c.categoryName === this.selectedCategory)?.categoryId].filter(id => id !== undefined) as number[] : 
       undefined;
     
-    this.productService.getProducts(categoryIds, this.searchQuery || undefined, undefined, undefined, this.pageSize, this.currentPage).subscribe({
+    this.productService.getProducts(categoryIds, this.searchQuery || undefined, this.minPrice || undefined, this.maxPrice || undefined, this.pageSize, this.currentPage, this.sortOrder || undefined).subscribe({
       next: (data) => {
         console.log('Products loaded:', data);
         this.products = data.products;
@@ -90,6 +93,26 @@ export class ProductsComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  onSearchChange() {
+    this.currentPage = 1;
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+    this.searchTimeout = setTimeout(() => {
+      this.loadProducts();
+    }, 300);
+  }
+
+  onPriceChange() {
+    this.currentPage = 1;
+    this.loadProducts();
+  }
+
+  onSortChange() {
+    this.currentPage = 1;
+    this.loadProducts();
   }
 
   filterByCategory(categoryName: string) {
@@ -248,8 +271,11 @@ export class ProductsComponent implements OnInit {
 
   handleFile(file: File) {
     if (file.type.startsWith('image/')) {
-      const fileName = file.name;
-      this.productForm.imgUrl = `/images/${fileName}`;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.productForm.imgUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
   }
 

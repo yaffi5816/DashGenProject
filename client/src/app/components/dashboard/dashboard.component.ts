@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -52,7 +52,14 @@ import { SuccessDialogComponent } from '../success-dialog.component';
         </div>
       </div>
 
-      <div class="schema-input-section">
+      <div class="skip-gemini-container">
+        <label class="skip-gemini-label">
+          <input type="checkbox" [(ngModel)]="skipGemini">
+          <span>דלג על Gemini (השתמש ב-HTML דמה)</span>
+        </label>
+      </div>
+
+      <div *ngIf="false" class="schema-input-section">
         <div class="skip-gemini-option">
           <label>
             <input type="checkbox" [(ngModel)]="skipGemini">
@@ -129,10 +136,41 @@ import { SuccessDialogComponent } from '../success-dialog.component';
     }
     .upload-options {
       max-width: 1200px;
-      margin: 0 auto 60px;
+      margin: 0 auto 32px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 32px;
+    }
+    .skip-gemini-container {
+      max-width: 1200px;
+      margin: 0 auto 60px;
+      display: flex;
+      justify-content: center;
+    }
+    .skip-gemini-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 16px;
+      color: #94a3b8;
+      padding: 12px 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s;
+    }
+    .skip-gemini-label:hover {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .skip-gemini-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-left: 12px;
+      cursor: pointer;
+    }
+    .skip-gemini-label span {
+      user-select: none;
     }
     .upload-card {
       background: rgba(15, 23, 42, 0.8);
@@ -353,6 +391,11 @@ import { SuccessDialogComponent } from '../success-dialog.component';
   `]
 })
 export class DashboardComponent {
+  private dialog = inject(MatDialog);
+  private dashboardService = inject(DashboardService);
+  private sanitizer = inject(DomSanitizer);
+  private cartService = inject(CartService);
+
   generatedHtml: SafeHtml | null = null;
   generatedCode = '';
   showCodeEditor = false;
@@ -375,13 +418,6 @@ Example JSON:
     "price": "number"
   }
 }`;
-
-  constructor(
-    private dialog: MatDialog,
-    private dashboardService: DashboardService,
-    private sanitizer: DomSanitizer,
-    private cartService: CartService
-  ) {}
 
   get selectedProducts() {
     return this.cartService.getItems().map(item => ({

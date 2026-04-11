@@ -22,9 +22,9 @@ namespace Services
             return _mapper.Map<IEnumerable<ProductDTO>>(products);
         }
 
-        public async Task<(IEnumerable<ProductDTO>, int)> GetProductsAsync(int[]? categoryId, string? description, double? minPrice, double? maxPrice, int? limit, int? page)
+        public async Task<(IEnumerable<ProductDTO>, int)> GetProductsAsync(int[]? categoryId, string? description, double? minPrice, double? maxPrice, int? limit, int? page, string? sortOrder)
         {
-            var (products, total) = await _repository.GetProductsAsync(categoryId, description, minPrice, maxPrice, limit, page);
+            var (products, total) = await _repository.GetProductsAsync(categoryId, description, minPrice, maxPrice, limit, page, sortOrder);
             var productsDTO = _mapper.Map<IEnumerable<ProductDTO>>(products);
             return (productsDTO, total);
         }
@@ -38,6 +38,7 @@ namespace Services
         public async Task<ProductDTO> AddAsync(ProductDTO productDto)
         {
             var product = _mapper.Map<Product>(productDto);
+            product.ProductId = 0;
             var newProduct = await _repository.AddAsync(product);
             return _mapper.Map<ProductDTO>(newProduct);
         }

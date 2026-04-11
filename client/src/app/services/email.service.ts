@@ -15,7 +15,8 @@ export class EmailService {
     const request: EmailRequest = {
       Email: email,
       Code: code,
-      FileName: fileName
+      FileName: fileName,
+      Subject: 'Your Generated Dashboard Code'
     };
     return this.http.post(`${this.apiUrl}/send-code`, request);
   }

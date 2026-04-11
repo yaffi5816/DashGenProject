@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
@@ -13,16 +13,14 @@ import { Product } from '../../../models/product.model';
   styleUrl: './product-detail.css'
 })
 export class ProductDetailComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private productService = inject(ProductService);
+  private cartService = inject(CartService);
+
   product: Product | null = null;
   quantity = 1;
   loading = true;
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private productService: ProductService,
-    private cartService: CartService
-  ) {}
 
   getImageUrl(imgUrl: string | null): string {
     return this.productService.getImageUrl(imgUrl);
