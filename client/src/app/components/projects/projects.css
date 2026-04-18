@@ -85,7 +85,23 @@
   font-size: 22px;
   font-weight: 700;
   color: #ffffff;
-  margin: 0 0 8px 0;
+  margin: 0 0 4px 0;
+}
+
+.order-id {
+  font-size: 13px;
+  color: #3b82f6;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+  letter-spacing: 0.5px;
+  text-align: right;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
 }
 
 .created-date {

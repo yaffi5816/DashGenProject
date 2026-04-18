@@ -1,13 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Repositories;
 using Services;
 using DTO;
 using WebApiShop.Middleware;
+using NLog.Web;
 
 DotNetEnv.Env.Load();
 var apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY");
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
 
 // Add services to the container.
 
@@ -27,7 +30,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -55,6 +58,9 @@ builder.Services.AddTransient<IOrderService, OrderService>();
 
 builder.Services.AddTransient<IEmailService, EmailService>();
 
+builder.Services.AddTransient<IRatingRepository, RatingRepository>();
+builder.Services.AddTransient<IRatingService, RatingService>();
+
 builder.Services.AddDbContext<DashGen2026Context>(
     options=>options.UseSqlServer(
         builder.Configuration.GetConnectionString("EfratHome"),
@@ -73,9 +79,14 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/openapi/v1.json", "My API V1");
     });
 }
+else
+{
+    app.UseHsts();
+}
 // Configure the HTTP request pipeline.
 
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<RatingMiddleware>();
 
 app.UseCors("AllowAngular");
 
@@ -88,3 +99,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

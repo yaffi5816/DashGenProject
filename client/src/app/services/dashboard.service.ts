@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = 'http://localhost:5034/api/dashboard';
+  private apiUrl = 'https://localhost:7226/api/dashboard';
 
   constructor(private http: HttpClient) {}
 

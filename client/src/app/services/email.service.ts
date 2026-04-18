@@ -7,7 +7,7 @@ import { EmailRequest } from '../../models/email-request.model';
   providedIn: 'root'
 })
 export class EmailService {
-  private apiUrl = 'http://localhost:5034/api/Email';
+  private apiUrl = 'https://localhost:7226/api/Email';
 
   constructor(private http: HttpClient) {}
 

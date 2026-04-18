@@ -7,7 +7,7 @@ import { Product } from '../../models/product.model';
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = 'http://localhost:5034/api/Products';
+  private apiUrl = 'https://localhost:7226/api/Products';
 
   constructor(private http: HttpClient) {}
 
@@ -39,7 +39,7 @@ export class ProductService {
     if (!imgUrl) return 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800';
     if (imgUrl.startsWith('data:image')) return imgUrl;
     if (imgUrl.startsWith('http')) return imgUrl;
-    return `http://localhost:5034${imgUrl}`;
+    return `https://localhost:7226${imgUrl}`;
   }
 
   deleteProduct(id: number): Observable<void> {

@@ -1,6 +1,7 @@
 using AutoMapper;
 using DTO;
 using Entities;
+using Microsoft.Extensions.Logging;
 using Repositories;
 
 namespace Services
@@ -8,12 +9,16 @@ namespace Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _repository;
+        private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<OrderService> _logger;
 
-        public OrderService(IOrderRepository repository, IMapper mapper)
+        public OrderService(IOrderRepository repository, IProductRepository productRepository, IMapper mapper, ILogger<OrderService> logger)
         {
             _repository = repository;
+            _productRepository = productRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<OrderDTO>> GetAsync()
@@ -37,6 +42,25 @@ namespace Services
         public async Task<OrderDTO> AddAsync(OrderDTO orderDto)
         {
             var order = _mapper.Map<Order>(orderDto);
+
+            if (orderDto.OrdersItems != null && orderDto.OrdersItems.Any())
+            {
+                double serverSum = 0;
+                foreach (var item in orderDto.OrdersItems)
+                {
+                    var product = await _productRepository.GetByIdAsync(item.ProductId);
+                    if (product != null)
+                        serverSum += product.Price * item.Quantity;
+                }
+
+                double clientSum = orderDto.OrdersSum;
+                if (Math.Abs(serverSum - clientSum) > 0.01)
+                    throw new InvalidOperationException(
+                        $"Order amount mismatch: client sent {clientSum}, server calculated {serverSum}");
+
+                order.OrdersSum = serverSum;
+            }
+
             var newOrder = await _repository.AddAsync(order);
             return _mapper.Map<OrderDTO>(newOrder);
         }

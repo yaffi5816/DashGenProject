@@ -6,6 +6,7 @@ namespace WebApiShop.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Produces("application/json")]
 public class DashboardController : ControllerBase
 {
     private readonly IGeminiService _geminiService;
@@ -15,24 +16,17 @@ public class DashboardController : ControllerBase
         _geminiService = geminiService;
     }
 
+    /// <summary>Generate dashboard code using Gemini AI</summary>
     [HttpPost("generate")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateDashboard([FromBody] DashboardRequest request)
     {
-        try
-        {
-            if (request == null || request.Schema == null || request.Components == null)
-            {
-                return BadRequest(new { error = "Invalid request. Schema and Components are required." });
-            }
+        if (request == null || request.Schema == null || request.Components == null)
+            return BadRequest(new { error = "Invalid request. Schema and Components are required." });
 
-            var code = await _geminiService.GenerateDashboardCodeAsync(request);
-            return Ok(new { generatedCode = code });
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-            Console.WriteLine($"Stack: {ex.StackTrace}");
-            return BadRequest(new { error = ex.Message, details = ex.InnerException?.Message });
-        }
+        var code = await _geminiService.GenerateDashboardCodeAsync(request);
+        return Ok(new { generatedCode = code });
     }
 }

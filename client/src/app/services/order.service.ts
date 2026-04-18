@@ -29,7 +29,7 @@ export interface OrderItem {
   providedIn: 'root'
 })
 export class OrderService {
-  private apiUrl = 'http://localhost:5034/api/Orders';
+  private apiUrl = 'https://localhost:7226/api/Orders';
 
   constructor(private http: HttpClient) {}
 

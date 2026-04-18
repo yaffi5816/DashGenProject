@@ -45,6 +45,8 @@ export class CartComponent implements OnInit {
     this.router.navigate(['/products']);
   }
 
+  successOrderId: number | null = null;
+
   checkout() {
     const userId = localStorage.getItem('userId');
     if (!userId) {
@@ -66,7 +68,9 @@ export class CartComponent implements OnInit {
     this.orderService.createOrder(order).subscribe({
       next: (createdOrder) => {
         localStorage.setItem('currentOrderId', createdOrder.orderId!.toString());
-        this.router.navigate(['/dashboard']);
+        this.cartService.clearCart();
+        this.successOrderId = createdOrder.orderId!;
+        setTimeout(() => this.router.navigate(['/dashboard']), 3000);
       },
       error: (err) => console.error('Error creating order:', err)
     });

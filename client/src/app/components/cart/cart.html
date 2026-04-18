@@ -1,4 +1,15 @@
 <div class="cart-container">
+  <div *ngIf="successOrderId" class="success-banner">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" stroke="#16a34a" stroke-width="2"/>
+      <path d="M7 12l4 4 6-6" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h2>Order placed successfully!</h2>
+    <p>Your order ID is: <strong>#{{ successOrderId }}</strong></p>
+    <p>Redirecting to dashboard...</p>
+  </div>
+
+  <div *ngIf="!successOrderId">
   <div class="cart-header">
     <h1>Your Shopping Cart</h1>
     <p *ngIf="cartItems.length > 0">You have {{ cartService.getItemCount() }} items in your cart</p>
@@ -55,5 +66,6 @@
       <button class="btn-checkout" (click)="checkout()">Proceed to Checkout</button>
       <button class="btn-continue-shopping" (click)="continueShopping()">Continue Shopping</button>
     </div>
+  </div>
   </div>
 </div>
